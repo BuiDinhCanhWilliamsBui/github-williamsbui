@@ -19,7 +19,7 @@ void Board ::drawboard() const
     {
         for (int cell : row)
         {
-            if (cel == 0)
+            if (cell == 0)
             {
                 cout << ".\t";
             }
@@ -29,5 +29,33 @@ void Board ::drawboard() const
             }
         }
         cout << "\n";
+    }
+}
+void Board::add_randomTile() // pick a random number 2/4 - Ở phiên bản 1.1 này tỉ lệ ô 2/4 ngẫu nhiên sẽ là 50 - 50
+{
+    vector<pair<int, int>> check; // check if a cell is empty
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0j < size; j++)
+        {
+            if (net[i][j] == 0)
+            {
+                check.push_back({i, j});
+            }
+        }
+    }
+    if (!check.empty())
+    {
+        std::pair<int, int> cell = check[rand() % (int)check.size()]; // pick a random cell
+        int a = cell.first, b = cell.second;
+        int check2 = rand() % 2;
+        if (check2 == 0)
+        {
+            net[a][b] = 2;
+        }
+        if (check2 == 1)
+        {
+            net[a][b] = 4;
+        }
     }
 }
