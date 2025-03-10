@@ -36,7 +36,7 @@ void Board::add_randomTile() // pick a random number 2/4 - Ở phiên bản 1.1 
     vector<pair<int, int>> check; // check if a cell is empty
     for (int i = 0; i < size; i++)
     {
-        for (int j = 0j < size; j++)
+        for (int j = 0; j < size; j++)
         {
             if (net[i][j] == 0)
             {
@@ -58,4 +58,28 @@ void Board::add_randomTile() // pick a random number 2/4 - Ở phiên bản 1.1 
             net[a][b] = 4;
         }
     }
+}
+bool Board::check_Gameover() const
+{
+    for (const vector<int> &row : net)
+    {
+        for (int cell : row)
+        {
+            if (cell == 0)
+            {
+                return false; // kiểm tra còn ô trống thì vẫn còn nước đi
+            }
+        }
+    }
+    for (int i = 0; i < size; i++) // check xem còn 2 ô kề nhau bằng nhau thì vẫn còn nước đi
+    {
+        for (int j = 0; j < size; j++)
+        {
+            if ((i < 3 && net[i][j] == net[i + 1][j]) || (j < 3 && net[i][j] == net[i][j + 1]))
+            {
+                return false;
+            }
+        }
+    }
+    return true; // nếu không còn gì để move thì gameover !
 }
