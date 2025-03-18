@@ -4,17 +4,11 @@
 // struct cho bảng
 class Board
 {
-private:
-    int size;
-    std::vector<std::vector<int>> net;
-
 public:
+    std::vector<std::vector<int>> net;
+    const int size;
     Board(int size = 4);
     void drawboard() const;
-    void move_Up();
-    void move_Down();
-    void move_Left();
-    void move_Right();
     void add_randomTile();
     bool check_Gameover() const;
 };
