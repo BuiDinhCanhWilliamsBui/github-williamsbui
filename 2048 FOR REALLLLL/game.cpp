@@ -90,3 +90,22 @@ void Game ::moveRight()
         }
     }
 }
+void Game ::moveUp()
+{
+    for (int j = 0; j < board.size; j++)
+    {
+        int pos = 0;
+        for (int i = 0; i < board.size; i++)
+        {
+            if (board.net[i][j] != 0)
+            {
+                board.net[pos][j] = board.net[i][j];
+                if (pos != i)
+                {
+                    board.net[i][j] = 0;
+                }
+                pos++;
+            }
+        }
+    }
+}
