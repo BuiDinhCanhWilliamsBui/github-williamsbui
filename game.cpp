@@ -7,7 +7,7 @@ Game ::Game() : score(0) {}
 void Game ::Start()
 {
     char move;
-    while (!board.check_Gameover())
+    while (true)
     {
         board.drawboard();
         cout << "Score : " << score << endl;
@@ -29,8 +29,15 @@ void Game ::Start()
             break;
         default:
             cout << "invalid move !" << endl;
+            continue;
         }
         board.add_randomTile();
+        if (board.check_Gameover())
+        {
+            board.drawboard(); // In ra bảng cuối cùng
+            cout << "Game Over!" << endl;
+            break; // Kết thúc vòng lặp và dừng game
+        }
     }
 }
 void Game ::moveLeft()
