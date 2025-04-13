@@ -5,11 +5,11 @@
 class Board
 {
 public:
-    std::vector<std::vector<int>> net;
     const int size;
+    std::vector<std::vector<int>> net;
     Board(int size = 4);
     void drawboard() const;
-    void add_randomTile();
-    bool check_Gameover() const;
+    void add_randomTile();       // Hàm thêm ô ngẫu nhiên
+    bool check_Gameover() const; // check xem Game đã over chưa
 };
 #endif
