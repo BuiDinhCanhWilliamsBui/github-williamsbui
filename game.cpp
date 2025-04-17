@@ -17,21 +17,26 @@ void Game ::Start()
         {
         case 'w':
             moveUp();
+            board.add_randomTile();
             break;
         case 's':
             moveDown();
+            board.add_randomTile();
             break;
         case 'a':
             moveLeft();
+            board.add_randomTile();
             break;
         case 'd':
             moveRight();
+            board.add_randomTile();
             break;
         default:
-            cout << "invalid move !" << endl;
+            cout << "Invalid move ! Press w-a-s-d to continue your game !" << endl;
+            cin.ignore();
+            cin.get();
             continue;
         }
-        board.add_randomTile();
         if (board.check_Gameover())
         {
             board.drawboard(); // In ra bảng cuối cùng
@@ -62,6 +67,7 @@ void Game ::moveLeft()
             if (board.net[i][k] == board.net[i][k + 1])
             {
                 board.net[i][k] *= 2;
+                score += board.net[i][k];
                 board.net[i][k + 1] = 0;
             }
         }
@@ -102,6 +108,7 @@ void Game ::moveRight()
             if (board.net[i][k] == board.net[i][k - 1])
             {
                 board.net[i][k] *= 2;
+                score += board.net[i][k];
                 board.net[i][k - 1] = 0;
             }
         }
@@ -142,6 +149,7 @@ void Game::moveUp()
             if (board.net[k][j] != 0 && board.net[k][j] == board.net[k + 1][j])
             {
                 board.net[k][j] *= 2;
+                score += board.net[k][j];
                 board.net[k + 1][j] = 0;
             }
         }
@@ -182,6 +190,7 @@ void Game::moveDown()
             if (board.net[k][j] == board.net[k - 1][j])
             {
                 board.net[k][j] *= 2;
+                score += board.net[k][j];
                 board.net[k - 1][j] = 0;
             }
         }
