@@ -21,3 +21,5 @@ hiện số 2 ở hàng/cột vừa rời khỏi.
 + Dùng mảng hai chiều , gán tất cả phàn tử bằng 0 , chọn 2 phần 
 tử gán là 2 và 4.
 +Các hàm di chuyển với logic dùng biến pos để đánh dấu vị trí đầu tiên  = 0;
++Cập nhật điểm số score sau mỗi lần di chuyển
++In ra invalid move và bắt nhập lại nếu không phải "w-a-s-d"
