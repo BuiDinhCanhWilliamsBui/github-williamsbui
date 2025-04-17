@@ -1,0 +1,8 @@
+PHIÊN BẢN 1.2
+-Cải tiến bảng,vẽ trên console đẹp mắt hơn
+-Thêm màu,frame cho bảng
+-Nhận diện phím thay vì phải ấn w-a-s-d +Enter
+-Cho phép lựa chọn chế độ 4x4;5x5;6x6
++Sửa phần constructor gamestart();
++sửa phần khai báo game.h
++officialgame sẽ có dòng nhập kích thước bảng muốn chơi đầu tiên

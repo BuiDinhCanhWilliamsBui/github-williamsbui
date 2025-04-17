@@ -9,7 +9,8 @@ public:
     std::vector<std::vector<int>> net;
     Board(int size = 4);
     void drawboard() const;
-    void add_randomTile();       // Hàm thêm ô ngẫu nhiên
+    void add_randomTile(); // Hàm thêm ô ngẫu nhiên
+    bool check_Win() const;
     bool check_Gameover() const; // check xem Game đã over chưa
 };
 #endif
