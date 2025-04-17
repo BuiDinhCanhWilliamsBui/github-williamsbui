@@ -37,6 +37,13 @@ void Game ::Start()
             cin.get();
             continue;
         }
+        if (board.check_Win())
+        {
+            board.drawboard(); // in ra bảng cuối
+            std::cout << "You win! You reached 2048! " << std::endl;
+            break; // dừng game
+        }
+
         if (board.check_Gameover())
         {
             board.drawboard(); // In ra bảng cuối cùng

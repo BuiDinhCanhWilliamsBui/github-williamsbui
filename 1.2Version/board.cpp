@@ -59,6 +59,20 @@ void Board::add_randomTile() // pick a random number 2/4 - Ở phiên bản 1.1 
         }
     }
 }
+bool Board::check_Win() const
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            if (net[i][j] == 2048)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 bool Board::check_Gameover() const
 {
     for (const vector<int> &row : net)
