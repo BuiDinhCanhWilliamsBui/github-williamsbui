@@ -1,8 +1,15 @@
 #include "game.h"
-
+#include <iostream>
+using namespace std;
 int main()
 {
-    Game game;
+    int size;
+    cout << "Enter the size of the board (board size must be larger than 3): ";
+    do
+    {
+        cin >> size;
+    } while (size < 4);
+    Game game(size);
     game.Start();
     return 0;
 }

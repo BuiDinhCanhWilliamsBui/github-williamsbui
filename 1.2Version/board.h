@@ -5,7 +5,7 @@
 class Board
 {
 public:
-    const int size;
+    int size;
     std::vector<std::vector<int>> net;
     Board(int size = 4);
     void drawboard() const;

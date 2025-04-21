@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 using namespace std;
 Board::Board(int size) : size(size), net(size, std::vector<int>(size, 0))
 {
@@ -14,22 +15,44 @@ Board::Board(int size) : size(size), net(size, std::vector<int>(size, 0))
 // vẽ bảng
 void Board ::drawboard() const
 {
+
     system("clear");
-    for (const vector<int> &row : net) // thay vì in ra số 0 của ô thì in ra .
+
+    const std::string horizontal = "──────";
+    const std::string topLeft = "┌", topMid = "┬", topRight = "┐";
+    const std::string midLeft = "├", midMid = "┼", midRight = "┤";
+    const std::string botLeft = "└", botMid = "┴", botRight = "┘";
+    const std::string vertical = "│";
+
+    auto print_row_border = [&](const std::string &left, const std::string &mid, const std::string &right)
     {
-        for (int cell : row)
+        std::cout << left;
+        for (int i = 0; i < size; ++i)
         {
-            if (cell == 0)
-            {
-                cout << ".\t";
-            }
-            else
-            {
-                cout << cell << "\t";
-            }
+            std::cout << horizontal;
+            if (i < size - 1)
+                std::cout << mid;
         }
-        cout << "\n";
+        std::cout << right << "\n";
+    };
+
+    print_row_border(topLeft, topMid, topRight);
+    for (int i = 0; i < size; ++i)
+    {
+        std::cout << vertical;
+        for (int j = 0; j < size; ++j)
+        {
+            if (net[i][j] == 0)
+                std::cout << "      ";
+            else
+                std::cout << std::setw(6) << net[i][j];
+            std::cout << vertical;
+        }
+        std::cout << "\n";
+        if (i < size - 1)
+            print_row_border(midLeft, midMid, midRight);
     }
+    print_row_border(botLeft, botMid, botRight);
 }
 void Board::add_randomTile() // pick a random number 2/4 - Ở phiên bản 1.1 này tỉ lệ ô 2/4 ngẫu nhiên sẽ là 50 - 50
 {

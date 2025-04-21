@@ -3,14 +3,38 @@
 #include "game.h"
 #include "board.h"
 using namespace std;
-Game ::Game() : score(0) {}
+Game ::Game(int size) : board(size), score(0) {}
 void Game ::Start()
 {
+    system("clear"); // clear terminal trước khi in logo
+
+    // Logo 2048 bằng ASCII
+    cout << R"(
+  _______  ________  ___   ___  ________     
+ /  ___  \|\   __  \|\  \ |\  \|\   __  \    
+/__/|_/  /\ \  \|\  \ \  \\_\  \ \  \|\  \   
+|__|//  / /\ \  \\\  \ \______  \ \   __  \  
+    /  /_/__\ \  \\\  \|_____|\  \ \  \|\  \ 
+   |\________\ \_______\     \ \__\ \_______\
+    \|_______|\|_______|      \|__|\|_______|
+                                             
+        )"
+         << endl;
+
+    cout << "Press Enter to start the game...";
+    cin.ignore(); // bỏ qua ký tự newline còn lại trong buffer
+    cin.get();    // chờ Enter
+
     char move;
     while (true)
     {
+        bool checkValid = true;
         board.drawboard();
+        cout << endl;
+        cout << endl;
         cout << "Score : " << score << endl;
+        cout << endl;
+        cout << endl;
         cout << "w-a-s-d to move : ";
         cin >> move;
         switch (move)
@@ -35,19 +59,44 @@ void Game ::Start()
             cout << "Invalid move ! Press w-a-s-d to continue your game !" << endl;
             cin.ignore();
             cin.get();
+            checkValid = false;
+            break;
+            ;
+        }
+        if (!checkValid)
+        {
             continue;
         }
         if (board.check_Win())
         {
             board.drawboard(); // in ra bảng cuối
-            std::cout << "You win! You reached 2048! " << std::endl;
+            cout << R"(
+____    ____  ______    __    __     ____    __    ____  __  .__   __. 
+\   \  /   / /  __  \  |  |  |  |    \   \  /  \  /   / |  | |  \ |  | 
+ \   \/   / |  |  |  | |  |  |  |     \   \/    \/   /  |  | |   \|  | 
+  \_    _/  |  |  |  | |  |  |  |      \            /   |  | |  . `  | 
+    |  |    |  `--'  | |  `--'  |       \    /\    /    |  | |  |\   | 
+    |__|     \______/   \______/         \__/  \__/     |__| |__| \__| 
+                                                                       
+                                             
+        )";
             break; // dừng game
         }
 
         if (board.check_Gameover())
         {
             board.drawboard(); // In ra bảng cuối cùng
-            cout << "Game Over!" << endl;
+            cout << R"(
+____    ____  ______    __    __      __        ______        _______. _______    
+\   \  /   / /  __  \  |  |  |  |    |  |      /  __  \      /       ||   ____|   
+ \   \/   / |  |  |  | |  |  |  |    |  |     |  |  |  |    |   (----`|  |__      
+  \_    _/  |  |  |  | |  |  |  |    |  |     |  |  |  |     \   \    |   __|     
+    |  |    |  `--'  | |  `--'  |    |  `----.|  `--'  | .----)   |   |  |____    
+    |__|     \______/   \______/     |_______| \______/  |_______/    |_______|   
+                                                                                  
+                                                                       
+                                             
+        )";
             break; // Kết thúc vòng lặp và dừng game
         }
     }

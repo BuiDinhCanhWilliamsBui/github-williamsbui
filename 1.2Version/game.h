@@ -7,7 +7,7 @@ private:
     int score;
 
 public:
-    Game(); // constructor khởi tạo , để bắt đầu với score  = 0;
+    Game(int size = 4); // constructor khởi tạo , để bắt đầu với score  = 0;
     void Start();
     void moveLeft();
     void moveRight();
