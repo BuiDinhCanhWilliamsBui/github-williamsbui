@@ -3,14 +3,19 @@
         {
             "name": "Mac",
             "includePath": [
+                "/usr/local/opt/sdl2/include/SDL2",
+                "/usr/local/opt/sdl2_image/include/SDL2",
+                "/Users/khach/sdl-libs/ttf/include/SDL2", // <-- phải có dòng này
                 "${workspaceFolder}/**"
             ],
             "defines": [],
             "macFrameworkPath": [
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks"
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks",
+                "/Library/Frameworks"
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-x64"
         }
     ],

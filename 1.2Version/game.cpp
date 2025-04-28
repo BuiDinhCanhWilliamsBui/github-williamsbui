@@ -2,8 +2,22 @@
 #include <vector>
 #include "game.h"
 #include "board.h"
+#include <termios.h>
+#include <unistd.h>
 using namespace std;
 Game ::Game(int size) : board(size), score(0) {}
+char getCharNoEnter()
+{
+    struct termios oldt, newt;
+    char ch;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+}
 void Game ::Start()
 {
     system("clear"); // clear terminal trước khi in logo
@@ -36,7 +50,7 @@ void Game ::Start()
         cout << endl;
         cout << endl;
         cout << "w-a-s-d to move : ";
-        cin >> move;
+        move = getCharNoEnter();
         switch (move)
         {
         case 'w':
