@@ -1,3 +1,4 @@
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
@@ -19,6 +20,25 @@ void drawText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, i
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
     SDL_DestroyTexture(texture);
+}
+
+void renderGameOver(SDL_Renderer *renderer, TTF_Font *font)
+{
+    // Vẽ nền mờ
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_Rect overlay = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+    SDL_RenderFillRect(renderer, &overlay);
+
+    // Tăng kích thước font cho chữ "Game Over!"
+    TTF_SetFontSize(font, 48);
+    SDL_Color yellow = {255, 255, 0, 255};
+    drawText(renderer, font, "Game Over!", WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT / 2 - 60, yellow);
+
+    // Font nhỏ hơn cho "Press R to Restart"
+    TTF_SetFontSize(font, 36);
+    SDL_Color white = {255, 255, 255, 255};
+    drawText(renderer, font, "Press R to Restart", WINDOW_WIDTH / 2 - 120, WINDOW_HEIGHT / 2 + 20, white);
 }
 
 int main(int argc, char *argv[])
@@ -162,9 +182,7 @@ int main(int argc, char *argv[])
             }
             else if (gameOver)
             {
-                SDL_Color white = {255, 255, 255, 255};
-                drawText(renderer, font, "Game Over!", WINDOW_WIDTH / 2 - 80, WINDOW_HEIGHT / 2 - 20, white);
-                drawText(renderer, font, "Press R to Restart", WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT / 2 + 20, white);
+                renderGameOver(renderer, font);
             }
         }
 
