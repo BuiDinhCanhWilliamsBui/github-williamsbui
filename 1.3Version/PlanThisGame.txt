@@ -1,0 +1,9 @@
+Phiên bản hoàn thiện 1.3
+-Chủ yếu xử lí sự kiện phím + đưa game hoàn toàn lên SDL --Đã xong
+-xử lí lỗi với font chữ Arial -- Đã xong
+-Logic game vẫn giữ nguyên như phiên bản trên console,khung xương là 
+console + đồ hoạ SDL
+---Đã hoàn thiện
+-Test : Chưa có lỗi xảy ra,game chạy mượt
+-cập nhật 3/5 : Thay background startgame,hiển thị gameover--ĐÃ fix lỗi
+-cập nhật 3/5 thay đổi thêm file âm thanh mỗi lần move + file background music ----gặp lỗi
