@@ -13,7 +13,7 @@ public:
     void add_randomTile();
     bool check_Win() const;
     bool check_Gameover() const;
-    // Hàm vẽ bảng bằng SDL
+    // Hàm vẽ bảng bằng SDL : Update hàm ngày 21/04
     void drawBoardSDL(SDL_Renderer *renderer, TTF_Font *font, int windowWidth, int windowHeight) const;
 };
 
