@@ -5,6 +5,7 @@ class Game
 {
 public:
     int score;
+    int highscore;
     Board board;
 
     Game(int size = 4);

@@ -1,10 +1,10 @@
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include "game.h"
-
+#include <fstream>
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 700;
 
@@ -111,6 +111,17 @@ int main(int argc, char *argv[])
     SDL_FreeSurface(gameOverSurface);
 
     Game game(4);
+    // đọc từ file highscore.txt
+    std::ifstream inFile("highscore.txt");
+    if (inFile.is_open())
+    {
+        inFile >> game.highscore;
+        inFile.close();
+    }
+    else
+    {
+        game.highscore = 0; // Giá trị mặc định nếu file không tồn tại
+    }
     bool quit = false;
     bool gameStarted = false;
     bool gameWon = false;
@@ -188,7 +199,9 @@ int main(int argc, char *argv[])
             char scoreText[64];
             snprintf(scoreText, sizeof(scoreText), "Score: %d", game.score);
             drawText(renderer, font, scoreText, 10, WINDOW_HEIGHT - 80, black);
-
+            char highscoreText[64];
+            snprintf(highscoreText, sizeof(highscoreText), "Highscore: %d", game.highscore);
+            drawText(renderer, font, highscoreText, 10, WINDOW_HEIGHT - 40, black); // update vẽ highscore
             if (game.board.check_Win() && !gameWon)
             {
                 gameWon = true;
@@ -220,7 +233,13 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
-
+    // Thêm đoạn ghi highscore vào file ngay trước khi cleanup
+    std::ofstream outFile("highscore.txt");
+    if (outFile.is_open())
+    {
+        outFile << game.highscore;
+        outFile.close();
+    }
     SDL_DestroyTexture(startTexture);
     SDL_DestroyTexture(gameOverTexture);
     TTF_CloseFont(font);

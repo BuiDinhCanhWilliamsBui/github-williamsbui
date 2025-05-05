@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-Game::Game(int size) : board(size), score(0) {}
+Game::Game(int size) : board(size), score(0), highscore(0) {}
 
 bool Game::moveLeft()
 {
@@ -32,6 +32,10 @@ bool Game::moveLeft()
             {
                 board.net[i][k] *= 2;
                 score += board.net[i][k];
+                if (score > highscore)
+                {
+                    highscore = score;
+                }
                 board.net[i][k + 1] = 0;
                 moved = true;
             }
@@ -79,6 +83,10 @@ bool Game::moveRight()
             {
                 board.net[i][k] *= 2;
                 score += board.net[i][k];
+                if (score > highscore)
+                {
+                    highscore = score;
+                }
                 board.net[i][k - 1] = 0;
                 moved = true;
             }
@@ -125,6 +133,10 @@ bool Game::moveUp()
             {
                 board.net[k][j] *= 2;
                 score += board.net[k][j];
+                if (score > highscore)
+                {
+                    highscore = score;
+                }
                 board.net[k + 1][j] = 0;
                 moved = true;
             }
@@ -171,6 +183,10 @@ bool Game::moveDown()
             {
                 board.net[k][j] *= 2;
                 score += board.net[k][j];
+                if (score > highscore)
+                {
+                    highscore = score;
+                }
                 board.net[k - 1][j] = 0;
                 moved = true;
             }
