@@ -25,9 +25,17 @@ void drawText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, i
 
 int main(int argc, char *argv[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // Thêm dòng này
+    {
+        std::cerr << "Mix_OpenAudio Error: " << Mix_GetError() << std::endl;
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
         return 1;
     }
     if (TTF_Init() != 0)
@@ -78,7 +86,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Load hình ảnh cho màn hình bắt đầu và game over
     SDL_Surface *startSurface = IMG_Load("start_screen.png");
     if (!startSurface)
     {
@@ -109,9 +116,56 @@ int main(int argc, char *argv[])
     }
     SDL_Texture *gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
     SDL_FreeSurface(gameOverSurface);
+    Mix_Chunk *beepSound = Mix_LoadWAV("beep.mp3");
+    if (!beepSound)
+    {
+        std::cerr << "Mix_LoadWAV Error (beep.wav): " << Mix_GetError() << std::endl;
+        SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(gameOverTexture);
+        TTF_CloseFont(font);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_Music *backgroundMusic = Mix_LoadMUS("background_music.mp3");
+    if (!backgroundMusic)
+    {
+        std::cerr << "Mix_LoadMUS Error (background_music.wav): " << Mix_GetError() << std::endl;
+        Mix_FreeChunk(beepSound);
+        SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(gameOverTexture);
+        TTF_CloseFont(font);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    if (!backgroundMusic)
+    {
+        std::cerr << "Mix_LoadMUS Error (background_music.wav): " << Mix_GetError() << std::endl;
+        Mix_FreeChunk(beepSound);
+        SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(gameOverTexture);
+        TTF_CloseFont(font);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    Mix_PlayMusic(backgroundMusic, -1);
 
     Game game(4);
-    // đọc từ file highscore.txt
     std::ifstream inFile("highscore.txt");
     if (inFile.is_open())
     {
@@ -120,7 +174,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        game.highscore = 0; // Giá trị mặc định nếu file không tồn tại
+        game.highscore = 0;
     }
     bool quit = false;
     bool gameStarted = false;
@@ -142,6 +196,7 @@ int main(int argc, char *argv[])
                 {
                     if (event.key.keysym.sym == SDLK_RETURN)
                     {
+                        Mix_PlayChannel(-1, beepSound, 0);
                         gameStarted = true;
                     }
                 }
@@ -152,15 +207,19 @@ int main(int argc, char *argv[])
                     {
                     case SDLK_w:
                         moved = game.moveUp();
+                        Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_s:
                         moved = game.moveDown();
+                        Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_a:
                         moved = game.moveLeft();
+                        Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_d:
                         moved = game.moveRight();
+                        Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_ESCAPE:
                         quit = true;
@@ -174,6 +233,7 @@ int main(int argc, char *argv[])
                 else if (event.key.keysym.sym == SDLK_r)
                 {
                     // Reset game
+                    Mix_PlayChannel(-1, beepSound, 0);
                     game = Game(4);
                     gameStarted = true;
                     gameWon = false;
@@ -187,7 +247,6 @@ int main(int argc, char *argv[])
 
         if (!gameStarted)
         {
-            // Hiển thị hình ảnh màn hình bắt đầu
             SDL_Rect startRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
             SDL_RenderCopy(renderer, startTexture, nullptr, &startRect);
         }
@@ -198,10 +257,10 @@ int main(int argc, char *argv[])
             SDL_Color black = {0, 0, 0, 255};
             char scoreText[64];
             snprintf(scoreText, sizeof(scoreText), "Score: %d", game.score);
-            drawText(renderer, font, scoreText, 10, WINDOW_HEIGHT - 80, black);
+            drawText(renderer, font, scoreText, 10, WINDOW_HEIGHT - 100, black);
             char highscoreText[64];
             snprintf(highscoreText, sizeof(highscoreText), "Highscore: %d", game.highscore);
-            drawText(renderer, font, highscoreText, 10, WINDOW_HEIGHT - 40, black); // update vẽ highscore
+            drawText(renderer, font, highscoreText, 10, WINDOW_HEIGHT - 60, black); // update vẽ highscore
             if (game.board.check_Win() && !gameWon)
             {
                 gameWon = true;
@@ -219,7 +278,6 @@ int main(int argc, char *argv[])
             }
             else if (gameOver)
             {
-                // Hiển thị hình ảnh game over
                 SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
                 SDL_Rect overlay = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
@@ -233,13 +291,15 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
-    // Thêm đoạn ghi highscore vào file ngay trước khi cleanup
     std::ofstream outFile("highscore.txt");
     if (outFile.is_open())
     {
         outFile << game.highscore;
         outFile.close();
     }
+    Mix_FreeChunk(beepSound);
+    Mix_FreeMusic(backgroundMusic);
+    Mix_CloseAudio();
     SDL_DestroyTexture(startTexture);
     SDL_DestroyTexture(gameOverTexture);
     TTF_CloseFont(font);
