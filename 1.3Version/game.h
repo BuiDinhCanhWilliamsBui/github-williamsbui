@@ -7,8 +7,9 @@ public:
     int score;
     int highscore;
     Board board;
+    Difficulty difficulty;
 
-    Game(int size = 4);
+    Game(int size = 4, Difficulty diff = Difficulty::EASY);
     bool moveLeft();
     bool moveRight();
     bool moveUp();

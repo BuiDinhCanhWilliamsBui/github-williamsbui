@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         return 1;
     }
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) // Thêm dòng này
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
     {
         std::cerr << "Mix_OpenAudio Error: " << Mix_GetError() << std::endl;
         IMG_Quit();
@@ -101,11 +101,28 @@ int main(int argc, char *argv[])
     SDL_Texture *startTexture = SDL_CreateTextureFromSurface(renderer, startSurface);
     SDL_FreeSurface(startSurface);
 
+    SDL_Surface *selectLevelSurface = IMG_Load("selectLevel.png");
+    if (!selectLevelSurface)
+    {
+        std::cerr << "IMG_Load Error (selectLevel.png): " << IMG_GetError() << std::endl;
+        SDL_DestroyTexture(startTexture);
+        TTF_CloseFont(font);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+    SDL_Texture *selectLevelTexture = SDL_CreateTextureFromSurface(renderer, selectLevelSurface);
+    SDL_FreeSurface(selectLevelSurface);
+
     SDL_Surface *gameOverSurface = IMG_Load("game_over.png");
     if (!gameOverSurface)
     {
         std::cerr << "IMG_Load Error (game_over.png): " << IMG_GetError() << std::endl;
         SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(selectLevelTexture);
         TTF_CloseFont(font);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -116,11 +133,13 @@ int main(int argc, char *argv[])
     }
     SDL_Texture *gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
     SDL_FreeSurface(gameOverSurface);
+
     Mix_Chunk *beepSound = Mix_LoadWAV("beep.mp3");
     if (!beepSound)
     {
         std::cerr << "Mix_LoadWAV Error (beep.wav): " << Mix_GetError() << std::endl;
         SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(selectLevelTexture);
         SDL_DestroyTexture(gameOverTexture);
         TTF_CloseFont(font);
         SDL_DestroyRenderer(renderer);
@@ -138,21 +157,7 @@ int main(int argc, char *argv[])
         std::cerr << "Mix_LoadMUS Error (background_music.wav): " << Mix_GetError() << std::endl;
         Mix_FreeChunk(beepSound);
         SDL_DestroyTexture(startTexture);
-        SDL_DestroyTexture(gameOverTexture);
-        TTF_CloseFont(font);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        Mix_Quit();
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-    if (!backgroundMusic)
-    {
-        std::cerr << "Mix_LoadMUS Error (background_music.wav): " << Mix_GetError() << std::endl;
-        Mix_FreeChunk(beepSound);
-        SDL_DestroyTexture(startTexture);
+        SDL_DestroyTexture(selectLevelTexture);
         SDL_DestroyTexture(gameOverTexture);
         TTF_CloseFont(font);
         SDL_DestroyRenderer(renderer);
@@ -165,19 +170,18 @@ int main(int argc, char *argv[])
     }
     Mix_PlayMusic(backgroundMusic, -1);
 
-    Game game(4);
+    Game *game = nullptr; // Use pointer to initialize later
     std::ifstream inFile("highscore.txt");
+    int highscore = 0;
     if (inFile.is_open())
     {
-        inFile >> game.highscore;
+        inFile >> highscore;
         inFile.close();
     }
-    else
-    {
-        game.highscore = 0;
-    }
+
     bool quit = false;
     bool gameStarted = false;
+    bool levelSelected = false; // New state for level selection
     bool gameWon = false;
     bool gameOver = false;
     SDL_Event event;
@@ -200,25 +204,54 @@ int main(int argc, char *argv[])
                         gameStarted = true;
                     }
                 }
+                else if (gameStarted && !levelSelected)
+                {
+                    Difficulty selectedDifficulty = Difficulty::EASY;
+                    bool difficultyChosen = false;
+                    switch (event.key.keysym.sym)
+                    {
+                    case SDLK_1:
+                        selectedDifficulty = Difficulty::EASY;
+                        difficultyChosen = true;
+                        Mix_PlayChannel(-1, beepSound, 0);
+                        break;
+                    case SDLK_2:
+                        selectedDifficulty = Difficulty::MEDIUM;
+                        difficultyChosen = true;
+                        Mix_PlayChannel(-1, beepSound, 0);
+                        break;
+                    case SDLK_3:
+                        selectedDifficulty = Difficulty::HARD;
+                        difficultyChosen = true;
+                        Mix_PlayChannel(-1, beepSound, 0);
+                        break;
+                    }
+                    if (difficultyChosen)
+                    {
+                        game = new Game(4, selectedDifficulty);
+                        game->highscore = highscore;
+                        levelSelected = true;
+                    }
+                }
                 else if (!gameWon && !gameOver)
                 {
                     bool moved = false;
                     switch (event.key.keysym.sym)
                     {
                     case SDLK_w:
-                        moved = game.moveUp();
+                        moved = game->moveUp();
                         Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_s:
-                        moved = game.moveDown();
+                        moved = game->moveDown();
                         Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_a:
-                        moved = game.moveLeft();
+                        moved = game->moveLeft();
                         Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_d:
-                        moved = game.moveRight();
+                        moved = game->moveRight();
                         Mix_PlayChannel(-1, beepSound, 0);
                         break;
                     case SDLK_ESCAPE:
@@ -227,15 +260,19 @@ int main(int argc, char *argv[])
                     }
                     if (moved)
                     {
-                        game.board.add_randomTile();
+                        game->board.add_randomTile();
                     }
                 }
                 else if (event.key.keysym.sym == SDLK_r)
                 {
                     // Reset game
                     Mix_PlayChannel(-1, beepSound, 0);
-                    game = Game(4);
+                    Difficulty currentDifficulty = game->difficulty;
+                    delete game;
+                    game = new Game(4, currentDifficulty);
+                    game->highscore = highscore;
                     gameStarted = true;
+                    levelSelected = true;
                     gameWon = false;
                     gameOver = false;
                 }
@@ -250,22 +287,27 @@ int main(int argc, char *argv[])
             SDL_Rect startRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
             SDL_RenderCopy(renderer, startTexture, nullptr, &startRect);
         }
+        else if (gameStarted && !levelSelected)
+        {
+            SDL_Rect selectLevelRect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+            SDL_RenderCopy(renderer, selectLevelTexture, nullptr, &selectLevelRect);
+        }
         else
         {
-            game.board.drawBoardSDL(renderer, font, WINDOW_WIDTH, WINDOW_HEIGHT - 100);
+            game->board.drawBoardSDL(renderer, font, WINDOW_WIDTH, WINDOW_HEIGHT - 100);
 
             SDL_Color black = {0, 0, 0, 255};
             char scoreText[64];
-            snprintf(scoreText, sizeof(scoreText), "Score: %d", game.score);
+            snprintf(scoreText, sizeof(scoreText), "Score: %d", game->score);
             drawText(renderer, font, scoreText, 10, WINDOW_HEIGHT - 100, black);
             char highscoreText[64];
-            snprintf(highscoreText, sizeof(highscoreText), "Highscore: %d", game.highscore);
-            drawText(renderer, font, highscoreText, 10, WINDOW_HEIGHT - 60, black); // update vẽ highscore
-            if (game.board.check_Win() && !gameWon)
+            snprintf(highscoreText, sizeof(highscoreText), "Highscore: %d", game->highscore);
+            drawText(renderer, font, highscoreText, 10, WINDOW_HEIGHT - 60, black);
+            if (game->board.check_Win() && !gameWon)
             {
                 gameWon = true;
             }
-            if (game.board.check_Gameover() && !gameOver)
+            if (game->board.check_Gameover() && !gameOver)
             {
                 gameOver = true;
             }
@@ -291,16 +333,19 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
+
     std::ofstream outFile("highscore.txt");
     if (outFile.is_open())
     {
-        outFile << game.highscore;
+        outFile << (game ? game->highscore : highscore);
         outFile.close();
     }
+
     Mix_FreeChunk(beepSound);
     Mix_FreeMusic(backgroundMusic);
     Mix_CloseAudio();
     SDL_DestroyTexture(startTexture);
+    SDL_DestroyTexture(selectLevelTexture);
     SDL_DestroyTexture(gameOverTexture);
     TTF_CloseFont(font);
     SDL_DestroyRenderer(renderer);
@@ -308,5 +353,6 @@ int main(int argc, char *argv[])
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
+    delete game;
     return 0;
 }

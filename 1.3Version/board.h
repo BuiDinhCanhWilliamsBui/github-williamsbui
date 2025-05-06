@@ -4,16 +4,23 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+enum class Difficulty
+{
+    EASY,
+    MEDIUM,
+    HARD
+};
+
 class Board
 {
 public:
     int size;
     std::vector<std::vector<int>> net;
-    Board(int size = 4);
+    Difficulty difficulty;
+    Board(int size = 4, Difficulty diff = Difficulty::EASY);
     void add_randomTile();
     bool check_Win() const;
     bool check_Gameover() const;
-    // Hàm vẽ bảng bằng SDL : Update hàm ngày 21/04
     void drawBoardSDL(SDL_Renderer *renderer, TTF_Font *font, int windowWidth, int windowHeight) const;
 };
 

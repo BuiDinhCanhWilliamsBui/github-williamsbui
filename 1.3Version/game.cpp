@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-Game::Game(int size) : board(size), score(0), highscore(0) {}
+Game::Game(int size, Difficulty diff) : board(size), score(0), highscore(0), difficulty(diff) {}
 
 bool Game::moveLeft()
 {

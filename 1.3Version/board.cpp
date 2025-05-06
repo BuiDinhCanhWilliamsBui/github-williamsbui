@@ -8,7 +8,7 @@
 #include <sstream>
 using namespace std;
 
-Board::Board(int size) : size(size), net(size, std::vector<int>(size, 0))
+Board::Board(int size, Difficulty diff) : size(size), net(size, std::vector<int>(size, 0)), difficulty(diff)
 {
     srand(time(0));
     add_randomTile();
@@ -32,7 +32,21 @@ void Board::add_randomTile()
     {
         std::pair<int, int> cell = check[rand() % check.size()];
         int a = cell.first, b = cell.second;
-        net[a][b] = (rand() % 2 == 0) ? 2 : 4;
+        int chance = rand() % 100;
+        int fourProbability;
+        switch (difficulty)
+        {
+        case Difficulty::EASY:
+            fourProbability = 10; // 10% chance for 4
+            break;
+        case Difficulty::MEDIUM:
+            fourProbability = 30; // 30% chance for 4
+            break;
+        case Difficulty::HARD:
+            fourProbability = 50; // 50% chance for 4
+            break;
+        }
+        net[a][b] = (chance < fourProbability) ? 4 : 2;
     }
 }
 
