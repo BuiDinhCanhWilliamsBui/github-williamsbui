@@ -8,3 +8,4 @@ console + đồ hoạ SDL
 -cập nhật 3/5 : Thay background startgame,hiển thị gameover--ĐÃ fix lỗi
 -cập nhật 3/5 thay đổi thêm file âm thanh mỗi lần move + file background music ----gặp lỗi
 -GỘP 1.4 VÀO 1.3
+back và beep đã add
